@@ -1,18 +1,45 @@
 ﻿@page
     <div class="container">
-        <div class="row">&nbsp;</div>
-        <div class="row">
+        <div id="connect-fields">
+            <div class="row">
+                <div class="col-2">Name</div>
+                <div class="col-4"><input type="text" id="nameInput" /></div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-2">Race</div>
+                <div class="col-4">
+                    <select id="raceInput">
+                        <option>Human</option>
+                        <option>Elf</option>
+                        <option>Dwarf</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-6">
+                    <input type="button" id="connectButton" value="Connect" />
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="row">&nbsp;</div> -->
+        <!-- <div class="row">
             <div class="col-2">User</div>
             <div class="col-4"><input type="text" id="userInput" /></div>
-        </div>
-        <div class="row">
-            <div class="col-2">Message</div>
-            <div class="col-4"><input type="text" id="messageInput" /></div>
-        </div>
-        <div class="row">&nbsp;</div>
-        <div class="row">
-            <div class="col-6">
-                <input type="button" id="sendButton" value="Send Message" />
+        </div> -->
+        <br>
+        <div id="message-fields" class="hidden">
+            <div class="row">
+                <div class="col-2">Message</div>
+                <div class="col-4"><input type="text" id="messageInput" /></div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-6">
+                    <input type="button" id="sendButton" value="Send Message" />
+                </div>
             </div>
         </div>
     </div>
