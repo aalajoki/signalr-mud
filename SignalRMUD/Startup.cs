@@ -26,6 +26,9 @@ namespace SignalRMUD
         {
             services.AddRazorPages();
             services.AddSignalR();
+
+            services.AddSingleton<RoomManager>();
+            services.AddSingleton<Navigation>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

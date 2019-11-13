@@ -16,7 +16,7 @@ function connect() {
         document.getElementById("message-fields").classList.remove("hidden");
         document.getElementById("sendButton").disabled = false;
     
-        alert(characterName);
+        // alert(characterName);
     
         connection.invoke("createCharacter", characterName, characterRace);
 
@@ -44,7 +44,7 @@ function connect() {
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
     var message = document.getElementById("messageInput").value;
-    connection.invoke("SendMessageGlobal", message).catch(function (err) {
+    connection.invoke("SendMessage", message).catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();

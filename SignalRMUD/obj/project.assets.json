@@ -8,24 +8,30 @@
     ".NETCoreApp,Version=v3.0": []
   },
   "packageFolders": {
-    "C:\\Users\\USER\\.nuget\\packages\\": {}
+    "C:\\Users\\Aleksi\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\signalr-mud\\SignalRMUD\\SignalRMUD.csproj",
+      "projectUniqueName": "D:\\signalr-mud\\SignalRMUD\\SignalRMUD.csproj",
       "projectName": "SignalRMUD",
-      "projectPath": "C:\\signalr-mud\\SignalRMUD\\SignalRMUD.csproj",
-      "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-      "outputPath": "C:\\signalr-mud\\SignalRMUD\\obj\\",
+      "projectPath": "D:\\signalr-mud\\SignalRMUD\\SignalRMUD.csproj",
+      "packagesPath": "C:\\Users\\Aleksi\\.nuget\\packages\\",
+      "outputPath": "D:\\signalr-mud\\SignalRMUD\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Aleksi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
