@@ -46,8 +46,6 @@ namespace SignalRChat.Hubs
 
         public string RelayGreetRequest(string currentRoom, string target) 
         {
-            // return _roomHandles[currentRoom].ToString();
-
             dynamic room = _roomHandles[currentRoom];
             string response = room.GreetRequest(target);
             return response;
@@ -55,11 +53,15 @@ namespace SignalRChat.Hubs
 
         public string RelayAttackRequest(string currentRoom, string attacker, string target, int attackStat) 
         {
-            // return _roomHandles[currentRoom].ToString();
-
             dynamic room = _roomHandles[currentRoom];
             string response = room.AttackRequest(attacker, target, attackStat);
             return response;
+        }
+
+        public void RelayStopAttack(string currentRoom, string attacker)
+        {
+            dynamic room = _roomHandles[currentRoom];
+            room.StopAttack(attacker);
         }
     }
 }

@@ -104,5 +104,9 @@ namespace SignalRChat.Hubs
                 return "notFound";
             }
         }
+
+        public void StopAttack(string attacker) {
+            _attackQueue.Remove(attacker);
+        }
     }
 }

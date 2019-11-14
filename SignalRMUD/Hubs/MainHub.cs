@@ -14,14 +14,6 @@ namespace SignalRChat.Hubs
             _roomManager = roomManager;
             _navigation = navigation;
         }
-        // public async Task SendMessage(string user, string message)
-        // {
-        //     if (message == "1123124" || message == "aaaaa") {
-        //         this.Context.Items.Add("test", message);
-        //     }
-        //     await Clients.All.SendAsync("ReceiveMessage", user, message);
-        //     await Clients.All.SendAsync("ReceiveMessage", user, this.Context.Items["test"]);
-        // }
 
         public async Task SendMessageGlobal(string message)
         {
@@ -52,47 +44,43 @@ namespace SignalRChat.Hubs
                 }
             }
             else if (command == "go") {
-                string currentRoom = Context.Items["currentRoom"].ToString();
-                string destination = _navigation.NavigationRequest(currentRoom, argument);
+                string currentRoomName = Context.Items["currentRoomName"].ToString();
+                string destination = _navigation.NavigationRequest(currentRoomName, argument);
                 // await Clients.Caller.SendAsync("ReceiveMessage", $"{navigationResult}");
                 if (destination != "invalid") {
                     // await Clients.Caller.SendAsync("ReceiveMessage", $"Going {argument}.");
-                    await MoveToRoom(currentRoom, destination);
+                    await MoveToRoom(currentRoomName, destination);
                 }
                 else {
                     await Clients.Caller.SendAsync("ReceiveMessage", "You can't go that way.");
                 }
             }
             else if (command == "greet") {
-                string currentRoom = Context.Items["currentRoom"].ToString();
-                string result = _roomManager.RelayGreetRequest(currentRoom, argument);
+                string currentRoomName = Context.Items["currentRoomName"].ToString();
+                string result = _roomManager.RelayGreetRequest(currentRoomName, argument);
                 // The friendly NPC object sends the message directly to the player on success in the current implementation
                 if (result == "notFound") {
                     await Clients.Caller.SendAsync("ReceiveMessage", $"Couldn't find anyone named {argument}.");
                 }
-                // else if (result == "notFriend") {
-                //     await Clients.Caller.SendAsync("ReceiveMessage", $"{argument} just growls at you.");
-                // }
                 else {
                     //success
                     await Clients.Caller.SendAsync("ReceiveMessage", result);
                 }
             }
             else if (command == "attack") {
-                string currentRoom = Context.Items["currentRoom"].ToString();
+                string currentRoomName = Context.Items["currentRoomName"].ToString();
                 string characterName = Context.Items["characterName"].ToString();
-                string result = _roomManager.RelayAttackRequest(currentRoom, characterName, argument, 1);
+                string result = _roomManager.RelayAttackRequest(currentRoomName, characterName, argument, 1);
                 // The friendly NPC object sends the message directly to the player on success in the current implementation
                 if (result == "notFound") {
                     await Clients.Caller.SendAsync("ReceiveMessage", $"Couldn't find enemies named {argument}.");
                 }
-                // else if (result == "notFriend") {
-                //     await Clients.Caller.SendAsync("ReceiveMessage", $"{argument} just growls at you.");
-                // }
-                // else {
-                //     //success
-                //     await Clients.Caller.SendAsync("ReceiveMessage", result);
-                // }
+            }
+            else if (command == "stop") {
+                string currentRoomName = Context.Items["currentRoomName"].ToString();
+                string characterName = Context.Items["characterName"].ToString();
+                
+                _roomManager.RelayStopAttack(currentRoomName, characterName);
             }
             else {
                 await Clients.Caller.SendAsync("ReceiveMessage", "Invalid command. Try again.");
@@ -109,21 +97,34 @@ namespace SignalRChat.Hubs
             await EnterRoom("The Inn");
         }
 
-        public async Task EnterRoom(string roomName)
-        {
-            this.Context.Items["currentRoom"] = roomName;
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-            // Remove after debugging
-            await Clients.Group(roomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has entered {roomName}.");
-        }
-
         public async Task MoveToRoom(string currentRoomName, string newRoomName)
         {
+            string characterName = Context.Items["characterName"].ToString();
+
+            _roomManager.RelayStopAttack(currentRoomName, characterName);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, currentRoomName);
-            // Remove after debugging
-            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has exited {currentRoomName}.");
+            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has left the area.");
 
             await EnterRoom(newRoomName);
+        }
+
+        public async Task EnterRoom(string currentRoomName)
+        {
+            this.Context.Items["currentRoomName"] = currentRoomName;
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, currentRoomName);
+            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has entered the area.");
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            string currentRoomName = Context.Items["currentRoomName"].ToString();
+            string characterName = Context.Items["characterName"].ToString();
+
+            _roomManager.RelayStopAttack(currentRoomName, characterName);
+
+            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has disconnected.");
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, currentRoomName);
         }
     }
 }
