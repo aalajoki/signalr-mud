@@ -16,14 +16,19 @@ namespace SignalRChat.Hubs
         private string _roomDescription = "This is a pleasant inn. Warm and homely.";
         public string roomDescription { get => _roomDescription; }
 
+        private Innkeeper bob;
+
         public Inn(IHubContext<MainHub> hubContext) 
         {
             this.hubContext = hubContext;
+            bob = new Innkeeper(hubContext, roomName);
         }
 
-        public void Heartbeat() {
+        public void Heartbeat()
+        {
             // Room logic here
-            hubContext.Clients.Group(_roomName).SendAsync("ReceiveMessage", roomDescription);
+            // hubContext.Clients.Group(_roomName).SendAsync("ReceiveMessage", roomDescription);
+            bob.Heartbeat();
         }
     }
 }
