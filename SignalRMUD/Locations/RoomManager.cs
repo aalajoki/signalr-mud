@@ -23,7 +23,8 @@ namespace SignalRChat.Hubs
             _townSquare = new TownSquare(_hubContext);
 
             _roomHandles = new Dictionary<string, object>() {
-                {"The Inn", _inn}
+                {"The Inn", _inn},
+                {"Town Square", _townSquare}
             };
 
             SetPulse(2000);
@@ -49,6 +50,15 @@ namespace SignalRChat.Hubs
 
             dynamic room = _roomHandles[currentRoom];
             string response = room.GreetRequest(target);
+            return response;
+        }
+
+        public string RelayAttackRequest(string currentRoom, string attacker, string target, int attackStat) 
+        {
+            // return _roomHandles[currentRoom].ToString();
+
+            dynamic room = _roomHandles[currentRoom];
+            string response = room.AttackRequest(attacker, target, attackStat);
             return response;
         }
     }

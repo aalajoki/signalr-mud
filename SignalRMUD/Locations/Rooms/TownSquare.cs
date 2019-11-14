@@ -23,24 +23,83 @@ namespace SignalRChat.Hubs
             set => _friendHandles = value; 
         }
 
+        private Dictionary<string, object> _enemyHandles;
+        public Dictionary<string, object> enemyHandles { 
+            get => _enemyHandles;
+            set => _enemyHandles = value; 
+        }
+
+        private SortedDictionary<string, Attack> _attackQueue = new SortedDictionary<string, Attack>();
+
+        private Thief thief;
+
         public TownSquare(IHubContext<MainHub> hubContext) 
         {
             this.hubContext = hubContext;
+            thief = new Thief(hubContext, roomName);
+
+            friendHandles = new Dictionary<string, object>() {};
+
+            enemyHandles = new Dictionary<string, object>() {
+                {"thief", thief},
+            };
         }
 
         public void Heartbeat() {
             // Room logic here
-            hubContext.Clients.Group(_roomName).SendAsync("ReceiveMessage", roomDescription);
+            thief.Heartbeat();
+            HandleAttacks();
         }
 
         public string GreetRequest(string target) 
         {
-            if (friendHandles.TryGetValue(target, out dynamic friendObj)) {
+            string targetLowercase = target.ToLower();
+
+            if (friendHandles.TryGetValue(targetLowercase, out dynamic friendObj)) {
                 return friendObj.Greet();
             }
-            // else if (enemyHandles.TryGetValue(target, out dynamic enemyObj)) {
-            //     return "notFriend";
-            // }
+            else if (enemyHandles.TryGetValue(targetLowercase, out dynamic enemyObj)) {
+                return enemyObj.Greet();
+            }
+            else {
+                return "notFound";
+            }
+        }
+
+        public void HandleAttacks() 
+        {
+            foreach( KeyValuePair<string, Attack> atk in _attackQueue )
+            {
+                if (enemyHandles.TryGetValue(atk.Value.target, out dynamic enemyObj)) {
+                    // Check if enemy is active / alive
+                    enemyObj.TakeDamage(atk.Value.attackStat);
+                    if (enemyObj.health <= 0) {
+                        hubContext.Clients.Group(roomName).SendAsync("ReceiveMessage", $"{atk.Value.target} was killed by {atk.Key}!");
+                        _attackQueue.Remove(atk.Key);
+                    }
+                    else {
+                        hubContext.Clients.Group(roomName).SendAsync(
+                            "ReceiveMessage", 
+                            $"{atk.Key} attacked {atk.Value.target} and dealt {atk.Value.attackStat} damage! {enemyObj.health} HP remaining."
+                        );
+                    }
+                }
+                else {
+                    _attackQueue.Remove(atk.Key);
+                }
+            }
+        }
+
+        public string AttackRequest(string attacker, string target, int attackStat) 
+        {
+            string targetLowercase = target.ToLower();
+            
+            if (enemyHandles.TryGetValue(targetLowercase, out dynamic enemyObj)) {
+                Attack atk = new Attack(attacker, target, attackStat);
+                _attackQueue.Add(attacker, atk);
+
+                return "success";
+            }
             else {
                 return "notFound";
             }
