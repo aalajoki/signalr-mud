@@ -13,5 +13,6 @@ namespace SignalRChat.Hubs
         List<string> idle {get;}
 
         void Heartbeat();
+        string Greet();
     }
 }

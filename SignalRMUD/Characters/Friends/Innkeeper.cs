@@ -19,14 +19,10 @@ namespace SignalRChat.Hubs
         }
 
         private string _name = "Bob the Innkeeper";
-        public string name {
-            get => _name;
-        } 
+        public string name { get => _name; } 
 
         private string _description;
-        public string description {
-            get => _description;
-        }
+        public string description { get => _description; }
 
         private List<string> _monologue = new List<string>{
             "Nice weather, isn't it?",
@@ -34,19 +30,15 @@ namespace SignalRChat.Hubs
             "Good day.",
             "Lots of people passing through now, with all the problems going on."
         };
-        public List<string> monologue {
-            get => _monologue;
-        }
+        public List<string> monologue { get => _monologue; }
 
         private List<string> _idle = new List<string>{
-            "The innkeeper coughs.",
-            "The innkeeper sweeps the floor with a broom.",
-            "The innkeeper washes a mug.",
-            "The innkeeper wipes the counter with a rag."
+            " coughs.",
+            " sweeps the floor with a broom.",
+            " washes a mug.",
+            " wipes the counter with a rag."
         };
-        public List<string> idle {
-            get => _idle;
-        }
+        public List<string> idle { get => _idle; }
 
         private Random _rand = new Random();
 
@@ -60,9 +52,17 @@ namespace SignalRChat.Hubs
         {
             // 1:5 chance for a random idle message per heartbeat
             if (_rand.Next(0, 100) < 20) {
-                int rand = _rand.Next(0, _idle.Count);
-                hubContext.Clients.Group(roomName).SendAsync("ReceiveMessage", idle[rand]);
+                int rand = _rand.Next(0, idle.Count);
+                hubContext.Clients.Group(roomName).SendAsync("ReceiveMessage", $"{name} {idle[rand]}");
             }
         }
+
+        public string Greet() {
+            int rand = _rand.Next(0, monologue.Count);
+            string response = $"{name}: {monologue[rand]}";
+            return response;
+        }
+
+        // respond with {name}: {idletext}
     }
 }

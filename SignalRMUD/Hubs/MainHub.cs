@@ -63,6 +63,21 @@ namespace SignalRChat.Hubs
                     await Clients.Caller.SendAsync("ReceiveMessage", "You can't go that way.");
                 }
             }
+            else if (command == "greet") {
+                string currentRoom = Context.Items["currentRoom"].ToString();
+                string result = _roomManager.RelayGreetRequest(currentRoom, argument);
+                // The friendly NPC object sends the message directly to the player on success in the current implementation
+                if (result == "notFriend") {
+                    await Clients.Caller.SendAsync("ReceiveMessage", $"Couldn't find anyone named {argument}.");
+                }
+                // else if (result == "notFriend") {
+                //     await Clients.Caller.SendAsync("ReceiveMessage", $"{argument} just growls at you.");
+                // }
+                else {
+                    //success
+                    await Clients.Caller.SendAsync("ReceiveMessage", result);
+                }
+            }
             else {
                 await Clients.Caller.SendAsync("ReceiveMessage", "Invalid command. Try again.");
             }

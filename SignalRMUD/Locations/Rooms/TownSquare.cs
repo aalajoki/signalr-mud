@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR;
 
 namespace SignalRChat.Hubs
@@ -16,6 +17,12 @@ namespace SignalRChat.Hubs
         private string _roomDescription = "It is quiet. Most people are staying inside.";
         public string roomDescription { get => _roomDescription; }
 
+        private Dictionary<string, object> _friendHandles;
+        public Dictionary<string, object> friendHandles { 
+            get => _friendHandles;
+            set => _friendHandles = value; 
+        }
+
         public TownSquare(IHubContext<MainHub> hubContext) 
         {
             this.hubContext = hubContext;
@@ -24,6 +31,19 @@ namespace SignalRChat.Hubs
         public void Heartbeat() {
             // Room logic here
             hubContext.Clients.Group(_roomName).SendAsync("ReceiveMessage", roomDescription);
+        }
+
+        public string GreetRequest(string target) 
+        {
+            if (friendHandles.TryGetValue(target, out dynamic friendObj)) {
+                return friendObj.Greet();
+            }
+            // else if (enemyHandles.TryGetValue(target, out dynamic enemyObj)) {
+            //     return "notFriend";
+            // }
+            else {
+                return "notFound";
+            }
         }
     }
 }
