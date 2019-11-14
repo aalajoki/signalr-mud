@@ -93,7 +93,6 @@ namespace SignalRChat.Hubs
             await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has exited {currentRoomName}.");
 
             await EnterRoom(newRoomName);
-            //Context.ConnectionId
         }
     }
 }
