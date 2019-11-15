@@ -32,33 +32,16 @@ function connect() {
     });
 }
 
-// var connection = new signalR.HubConnectionBuilder().withUrl("/mainHub").build();
-
-// connection.on("ReceiveMessage", function (user, message) {
-//     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-//     var encodedMsg = user + " says " + msg;
-//     var li = document.createElement("li");
-//     li.textContent = encodedMsg;
-//     document.getElementById("messagesList").appendChild(li);
-// });
-
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    var message = document.getElementById("messageInput").value;
+    const input = document.getElementById("messageInput");
+    const message = input.value;
+    input.value = "";
+
     connection.invoke("SendMessage", message).catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
 });
-
-// document.getElementById("sendButton").addEventListener("click", function (event) {
-//     // REMOVE USER
-//     var user = document.getElementById("userInput").value;
-//     var message = document.getElementById("messageInput").value;
-//     connection.invoke("SendMessage", user, message).catch(function (err) {
-//         return console.error(err.toString());
-//     });
-//     event.preventDefault();
-// });
 
 document.getElementById("connectButton").addEventListener("click", function (event) {
     connect();

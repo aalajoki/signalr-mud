@@ -40,7 +40,7 @@ namespace SignalRChat.Hubs
                 }
                 else {
                     // E.g. add "Bob: Hi" into chat
-                    await Clients.All.SendAsync("ReceiveMessage", $"{Context.Items["characterName"]}: {argument}.");
+                    await Clients.All.SendAsync("ReceiveMessage", $"{Context.Items["characterName"]}: {argument}");
                 }
             }
             else if (command == "go") {

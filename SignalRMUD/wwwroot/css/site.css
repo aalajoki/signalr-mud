@@ -1,9 +1,25 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
+
+#messagesField {
+  overflow: auto;
+}
+
+#middle {
+  height: 20em;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+#messagesList {
+  /* display: flex;
+  flex-direction: column-reverse;
+  flex-grow: 1; */
+}
+
 .hidden {
   display: none;
 }
-
 
 a.navbar-brand {
   white-space: normal;

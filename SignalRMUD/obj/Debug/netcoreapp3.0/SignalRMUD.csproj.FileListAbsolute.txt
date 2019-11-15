@@ -27,7 +27,6 @@ D:\signalr-mud\SignalRMUD\obj\Debug\netcoreapp3.0\SignalRMUD.TagHelpers.output.c
 D:\signalr-mud\SignalRMUD\obj\Debug\netcoreapp3.0\SignalRMUD.RazorCoreGenerate.cache
 D:\signalr-mud\SignalRMUD\obj\Debug\netcoreapp3.0\Razor\Pages\Error.cshtml.g.cs
 D:\signalr-mud\SignalRMUD\obj\Debug\netcoreapp3.0\Razor\Pages\Index.cshtml.g.cs
-D:\signalr-mud\SignalRMUD\obj\Debug\netcoreapp3.0\Razor\Pages\Privacy.cshtml.g.cs
 D:\signalr-mud\SignalRMUD\obj\Debug\netcoreapp3.0\Razor\Pages\Shared\_Layout.cshtml.g.cs
 D:\signalr-mud\SignalRMUD\obj\Debug\netcoreapp3.0\Razor\Pages\Shared\_ValidationScriptsPartial.cshtml.g.cs
 D:\signalr-mud\SignalRMUD\obj\Debug\netcoreapp3.0\Razor\Pages\_ViewImports.cshtml.g.cs
