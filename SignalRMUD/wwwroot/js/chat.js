@@ -27,6 +27,10 @@ function connect() {
             li.textContent = message;
             document.getElementById("messagesList").appendChild(li);
         });
+
+        connection.onclose(function () {
+            alert("You have lost connection to the server.");
+        });
     
     }).catch(function (err) {
         return console.error(err.toString());
