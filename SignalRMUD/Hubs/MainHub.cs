@@ -55,7 +55,7 @@ namespace SignalRChat.Hubs
                     await Clients.Caller.SendAsync("ReceiveMessage", "You can't go that way.");
                 }
             }
-            else if (command == "greet") {
+            else if (command == "greet" || command == "talk") {
                 string currentRoomName = Context.Items["currentRoomName"].ToString();
                 string result = _roomManager.RelayGreetRequest(currentRoomName, argument);
                 // The friendly NPC object sends the message directly to the player on success in the current implementation

@@ -2,6 +2,7 @@
 
 //Disable send button until connection is established
 document.getElementById("sendButton").disabled = true;
+const input = document.getElementById("messageInput");
 var connection = null;
 
 function connect() {
@@ -33,7 +34,6 @@ function connect() {
 }
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    const input = document.getElementById("messageInput");
     const message = input.value;
     input.value = "";
 
