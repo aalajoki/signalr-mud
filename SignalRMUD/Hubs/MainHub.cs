@@ -46,9 +46,7 @@ namespace SignalRChat.Hubs
             else if (command == "go") {
                 string currentRoomName = Context.Items["currentRoomName"].ToString();
                 string destination = _navigation.NavigationRequest(currentRoomName, argument);
-                // await Clients.Caller.SendAsync("ReceiveMessage", $"{navigationResult}");
                 if (destination != "invalid") {
-                    // await Clients.Caller.SendAsync("ReceiveMessage", $"Going {argument}.");
                     await MoveToRoom(currentRoomName, destination);
                 }
                 else {
@@ -57,8 +55,9 @@ namespace SignalRChat.Hubs
             }
             else if (command == "greet" || command == "talk") {
                 string currentRoomName = Context.Items["currentRoomName"].ToString();
+                // The relay the greet command to the correct room and NPC through RoomManager
                 string result = _roomManager.RelayGreetRequest(currentRoomName, argument);
-                // The friendly NPC object sends the message directly to the player on success in the current implementation
+                
                 if (result == "notFound") {
                     await Clients.Caller.SendAsync("ReceiveMessage", $"Couldn't find anyone named {argument}.");
                 }
@@ -89,10 +88,8 @@ namespace SignalRChat.Hubs
 
         public async Task CreateCharacter(string name, string race)
         {
-            // Some error handling here?
             this.Context.Items.Add("characterName", name);
             this.Context.Items.Add("characterRace", race);
-            // Add to "The Inn" group
             await Clients.All.SendAsync("ReceiveMessage", $"A new hero has appeared: {name} the {race}!");
             await EnterRoom("The Inn");
         }
