@@ -103,7 +103,7 @@ namespace SignalRChat.Hubs
 
             _roomManager.RelayStopAttack(currentRoomName, characterName);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, currentRoomName);
-            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has left the area.");
+            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has left {currentRoomName}.");
 
             await EnterRoom(newRoomName);
         }
@@ -113,7 +113,7 @@ namespace SignalRChat.Hubs
             this.Context.Items["currentRoomName"] = currentRoomName;
 
             await Groups.AddToGroupAsync(Context.ConnectionId, currentRoomName);
-            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has entered the area.");
+            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has entered {currentRoomName}.");
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
