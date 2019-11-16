@@ -32,7 +32,11 @@ namespace SignalRChat.Hubs
             await interpretCommand(command, argument);
         }
 
-        public async Task interpretCommand(string command, string argument) {
+        public async Task interpretCommand(string command, string argument) 
+        {
+            string currentRoomName = Context.Items["currentRoomName"].ToString();
+            string characterName = Context.Items["characterName"].ToString();
+
             if (command == "say") {
                 if (String.IsNullOrEmpty(argument)) {
                     // Nothing to say
@@ -44,8 +48,8 @@ namespace SignalRChat.Hubs
                 }
             }
             else if (command == "go") {
-                string currentRoomName = Context.Items["currentRoomName"].ToString();
                 string destination = _navigation.NavigationRequest(currentRoomName, argument);
+
                 if (destination != "invalid") {
                     await MoveToRoom(currentRoomName, destination);
                 }
@@ -54,7 +58,6 @@ namespace SignalRChat.Hubs
                 }
             }
             else if (command == "greet" || command == "talk") {
-                string currentRoomName = Context.Items["currentRoomName"].ToString();
                 // The relay the greet command to the correct room and NPC through RoomManager
                 string result = _roomManager.RelayGreetRequest(currentRoomName, argument);
                 
@@ -67,18 +70,13 @@ namespace SignalRChat.Hubs
                 }
             }
             else if (command == "attack") {
-                string currentRoomName = Context.Items["currentRoomName"].ToString();
-                string characterName = Context.Items["characterName"].ToString();
+                // The relay the attack command to the correct room and NPC through RoomManager
                 string result = _roomManager.RelayAttackRequest(currentRoomName, characterName, argument, 1);
-                // The friendly NPC object sends the message directly to the player on success in the current implementation
                 if (result == "notFound") {
                     await Clients.Caller.SendAsync("ReceiveMessage", $"Couldn't find enemies named {argument}.");
                 }
             }
             else if (command == "stop") {
-                string currentRoomName = Context.Items["currentRoomName"].ToString();
-                string characterName = Context.Items["characterName"].ToString();
-                
                 _roomManager.RelayStopAttack(currentRoomName, characterName);
             }
             else {
