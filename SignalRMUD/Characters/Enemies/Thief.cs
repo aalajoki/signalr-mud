@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace SignalRChat.Hubs
 {
-    class Thief : IEnemy
+    class Thief : INonPlayerCharacter
     {
         private IHubContext<MainHub> _hubContext;
         public IHubContext<MainHub> hubContext { 

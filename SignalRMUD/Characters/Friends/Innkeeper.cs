@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace SignalRChat.Hubs
 {
-    class Innkeeper : IFriend
+    class Innkeeper : INonPlayerCharacter
     {
         private IHubContext<MainHub> _hubContext;
         public IHubContext<MainHub> hubContext { 
@@ -39,6 +39,12 @@ namespace SignalRChat.Hubs
             " wipes the counter with a rag."
         };
         public List<string> idle { get => _idle; }
+
+        private int _health = 1;
+        public int health {
+            get => _health;
+            set => _health = value;
+        }
 
         private Random _rand = new Random();
 

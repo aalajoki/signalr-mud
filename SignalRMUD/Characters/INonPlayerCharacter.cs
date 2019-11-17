@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SignalRChat.Hubs
 {
-    interface IFriend
+    interface INonPlayerCharacter
     {
         IHubContext<MainHub> hubContext {get; set;}
         string roomName {get; set;}
@@ -11,6 +11,7 @@ namespace SignalRChat.Hubs
         string description {get;}
         List<string> monologue {get;}
         List<string> idle {get;}
+        int health {get; set;}
 
         void Heartbeat();
         string Greet();
