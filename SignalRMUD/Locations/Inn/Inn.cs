@@ -60,6 +60,15 @@ namespace SignalRChat.Hubs
             enemyHandles = new Dictionary<string, object>() {};
         }
 
+        public string NavigationRequest(string direction) {
+            if (navigationDirections.TryGetValue(direction, out string nextRoom)) {
+                return nextRoom;
+            }
+            else {
+                return "invalid";
+            }
+        }
+
         public void Heartbeat()
         {
             bob.Heartbeat();
@@ -122,15 +131,6 @@ namespace SignalRChat.Hubs
 
         public void StopAttack(string attacker) {
             _attackQueue.Remove(attacker);
-        }
-
-        public string NavigationRequest(string direction) {
-            if (navigationDirections.TryGetValue(direction, out string nextRoom)) {
-                return nextRoom;
-            }
-            else {
-                return "invalid";
-            }
         }
     }
 }

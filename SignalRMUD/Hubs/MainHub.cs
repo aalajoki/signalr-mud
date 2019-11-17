@@ -95,8 +95,13 @@ namespace SignalRChat.Hubs
             string characterName = Context.Items["characterName"].ToString();
 
             _roomManager.RelayStopAttack(currentRoomName, characterName);
+            // Remove player from the old room's group
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, currentRoomName);
-            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has left {currentRoomName}.");
+            // Tell all players inside the old room that this player has left
+            await Clients.Group(currentRoomName).SendAsync(
+                "ReceiveMessage", 
+                $"{Context.Items["characterName"]} left and entered {newRoomName}."
+            );
 
             await EnterRoom(newRoomName);
         }
@@ -104,9 +109,13 @@ namespace SignalRChat.Hubs
         public async Task EnterRoom(string currentRoomName)
         {
             this.Context.Items["currentRoomName"] = currentRoomName;
-
+            // Add player to the new room's group
             await Groups.AddToGroupAsync(Context.ConnectionId, currentRoomName);
-            await Clients.Group(currentRoomName).SendAsync("ReceiveMessage", $"{Context.Items["characterName"]} has entered {currentRoomName}.");
+            // Tell all players inside the new room that this player has entered
+            await Clients.Group(currentRoomName).SendAsync(
+                "ReceiveMessage", 
+                $"{Context.Items["characterName"]} has entered {currentRoomName}."
+            );
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
