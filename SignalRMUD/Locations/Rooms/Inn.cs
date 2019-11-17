@@ -29,6 +29,12 @@ namespace SignalRChat.Hubs
             set => _enemyHandles = value; 
         }
 
+        private Dictionary<string, string> _navigationDirections;
+        public Dictionary<string, string> navigationDirections { 
+            get => _navigationDirections;
+            set => _navigationDirections = value; 
+        }
+
         private SortedDictionary<string, Attack> _attackQueue = new SortedDictionary<string, Attack>();
 
         private Innkeeper bob;
@@ -43,6 +49,12 @@ namespace SignalRChat.Hubs
                 {"the innkeeper", bob},
                 {"innkeeper", bob},
                 {"bob the innkeeper", bob},
+            };
+
+            navigationDirections = new Dictionary<string, string>() {
+                {"out", "Town Square"},
+                {"outside", "Town Square"},
+                {"town square", "Town Square"},
             };
 
             enemyHandles = new Dictionary<string, object>() {};
@@ -110,6 +122,15 @@ namespace SignalRChat.Hubs
 
         public void StopAttack(string attacker) {
             _attackQueue.Remove(attacker);
+        }
+
+        public string NavigationRequest(string direction) {
+            if (navigationDirections.TryGetValue(direction, out string nextRoom)) {
+                return nextRoom;
+            }
+            else {
+                return "invalid";
+            }
         }
     }
 }

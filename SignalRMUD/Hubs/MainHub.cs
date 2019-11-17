@@ -8,11 +8,9 @@ namespace SignalRChat.Hubs
     public class MainHub : Hub
     {
         private readonly RoomManager _roomManager;
-        private readonly NavigationManager _navigation;
 
-        public MainHub(RoomManager roomManager, NavigationManager navigation) {
+        public MainHub(RoomManager roomManager) {
             _roomManager = roomManager;
-            _navigation = navigation;
         }
 
         public async Task SendMessageGlobal(string message)
@@ -48,7 +46,7 @@ namespace SignalRChat.Hubs
                 }
             }
             else if (command == "go") {
-                string destination = _navigation.NavigationRequest(currentRoomName, argument);
+                string destination = _roomManager.RelayNavigationRequest(currentRoomName, argument);
 
                 if (destination != "invalid") {
                     await MoveToRoom(currentRoomName, destination);

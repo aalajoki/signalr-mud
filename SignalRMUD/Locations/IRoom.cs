@@ -10,10 +10,17 @@ namespace SignalRChat.Hubs
         string roomDescription {get;}
         Dictionary<string, object> friendHandles {get; set;}
         Dictionary<string, object> enemyHandles {get; set;}
+        Dictionary<string, string> navigationDirections {get; set;}
 
         // Room-specific code that is run once per heartbeat
         void Heartbeat();
+
         string GreetRequest(string target);
-        //string AttackRequest(string target);
+
+        string AttackRequest(string attacker, string target, int attackStat);
+        void HandleAttacks();
+        void StopAttack(string attacker);
+
+        string NavigationRequest(string direction);
     }
 }

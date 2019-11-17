@@ -62,5 +62,12 @@ namespace SignalRChat.Hubs
             dynamic room = _roomHandles[currentRoom];
             room.StopAttack(attacker);
         }
+
+        public string RelayNavigationRequest(string currentRoom, string direction)
+        {
+            dynamic room = _roomHandles[currentRoom];
+            string destination = room.NavigationRequest(direction);
+            return destination;
+        }
     }
 }
