@@ -26,7 +26,6 @@ namespace SignalRChat.Hubs
                 {"The Inn", _inn},
                 {"Town Square", _townSquare}
             };
-
             SetPulse(2000);
         }
         

@@ -8,9 +8,9 @@ namespace SignalRChat.Hubs
     public class MainHub : Hub
     {
         private readonly RoomManager _roomManager;
-        private readonly Navigation _navigation;
+        private readonly NavigationManager _navigation;
 
-        public MainHub(RoomManager roomManager, Navigation navigation) {
+        public MainHub(RoomManager roomManager, NavigationManager navigation) {
             _roomManager = roomManager;
             _navigation = navigation;
         }
@@ -29,10 +29,10 @@ namespace SignalRChat.Hubs
             messageList.RemoveAt(0);
             string argument = String.Join(" ", messageList);
 
-            await interpretCommand(command, argument);
+            await InterpretCommand(command, argument);
         }
 
-        public async Task interpretCommand(string command, string argument) 
+        public async Task InterpretCommand(string command, string argument) 
         {
             string currentRoomName = Context.Items["currentRoomName"].ToString();
             string characterName = Context.Items["characterName"].ToString();

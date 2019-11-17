@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 namespace SignalRChat.Hubs
 {
-    public class Navigation
+    public class NavigationManager
     {
         private Dictionary<string, Dictionary<string, string>> _navigation;
 
-        public Navigation() {
+        public NavigationManager() {
             _navigation = new Dictionary<string, Dictionary<string, string>>() {
                 { "The Inn", new Dictionary<string,string>(){
                     {"out", "Town Square"},
