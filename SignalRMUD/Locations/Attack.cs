@@ -3,30 +3,16 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace SignalRChat.Hubs
 {
-    public class Attack
+    public struct Attack
     {
-        private string _attacker;
-        public string attacker {
-            get => _attacker;
-            set => _attacker = value;
-        }
-
-        private string _target;
-        public string target {
-            get => _target;
-            set => _target = value;
-        }
-
-        private int _attackStat;
-        public int attackStat {
-            get => _attackStat;
-            set => _attackStat = value;
-        }
-
-        public Attack(string attacker, string target, int attackStat) {
+        public string attacker;
+        public string target;
+        public int attackPower;
+        
+        public Attack(string attacker, string target, int attackPower) {
             this.attacker = attacker;
             this.target = target;
-            this.attackStat = attackStat;
+            this.attackPower = attackPower;
         }
     }
 }
