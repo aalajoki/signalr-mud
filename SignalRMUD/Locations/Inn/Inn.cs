@@ -96,7 +96,7 @@ namespace SignalRChat.Hubs
             {
                 if (enemyHandles.TryGetValue(atk.Value.target, out dynamic enemyObj)) {
                     // Check if enemy is active / alive
-                    enemyObj.TakeDamage(atk.Value.attackStat);
+                    enemyObj.TakeDamage(atk.Value.attackPower);
                     if (enemyObj.health <= 0) {
                         hubContext.Clients.Group(roomName).SendAsync("ReceiveMessage", $"{atk.Value.target} was killed by {atk.Key}!");
                         _attackQueue.Remove(atk.Key);
@@ -104,7 +104,7 @@ namespace SignalRChat.Hubs
                     else {
                         hubContext.Clients.Group(roomName).SendAsync(
                             "ReceiveMessage", 
-                            $"{atk.Key} attacked {atk.Value.target} and dealt {atk.Value.attackStat} damage! {enemyObj.health} HP remaining."
+                            $"{atk.Key} attacked {atk.Value.target} and dealt {atk.Value.attackPower} damage! {enemyObj.health} HP remaining."
                         );
                     }
                 }
@@ -114,12 +114,12 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public string AttackRequest(string attacker, string target, int attackStat) 
+        public string AttackRequest(string attacker, string target, int attackPower) 
         {
             string targetLowercase = target.ToLower();
             
             if (enemyHandles.TryGetValue(targetLowercase, out dynamic enemyObj)) {
-                Attack atk = new Attack(attacker, target, attackStat);
+                Attack atk = new Attack(attacker, target, attackPower);
                 _attackQueue.Add(attacker, atk);
 
                 return "success";
@@ -129,7 +129,8 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public void StopAttack(string attacker) {
+        public void StopAttack(string attacker)
+        {
             _attackQueue.Remove(attacker);
         }
     }

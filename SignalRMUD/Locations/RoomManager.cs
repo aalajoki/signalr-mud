@@ -50,10 +50,10 @@ namespace SignalRChat.Hubs
             return response;
         }
 
-        public string RelayAttackRequest(string currentRoom, string attacker, string target, int attackStat) 
+        public string RelayAttackRequest(string currentRoom, string attacker, string target, int attackPower) 
         {
             dynamic room = _roomHandles[currentRoom];
-            string response = room.AttackRequest(attacker, target, attackStat);
+            string response = room.AttackRequest(attacker, target, attackPower);
             return response;
         }
 

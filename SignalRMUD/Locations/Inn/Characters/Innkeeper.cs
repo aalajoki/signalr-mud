@@ -47,7 +47,7 @@ namespace SignalRChat.Hubs
         }
 
         private Random _rand = new Random();
-
+        
         public Innkeeper(IHubContext<MainHub> hubContext, string room)
         {
             this.hubContext = hubContext;
