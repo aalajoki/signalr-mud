@@ -8,7 +8,7 @@ namespace SignalRChat.Hubs
         public string attacker;
         public string target;
         public int attackPower;
-        
+
         public Attack(string attacker, string target, int attackPower) {
             this.attacker = attacker;
             this.target = target;

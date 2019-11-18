@@ -35,7 +35,7 @@ namespace SignalRChat.Hubs
             set => _navigationDirections = value; 
         }
 
-        private SortedDictionary<string, Attack> _attackQueue = new SortedDictionary<string, Attack>();
+        private List<Attack> _attackQueue = new List<Attack>();
 
         private Thief thief;
 
@@ -63,6 +63,15 @@ namespace SignalRChat.Hubs
             HandleAttacks();
         }
 
+        public string NavigationRequest(string direction) {
+            if (navigationDirections.TryGetValue(direction, out string nextRoom)) {
+                return nextRoom;
+            }
+            else {
+                return "invalid";
+            }
+        }
+
         public string GreetRequest(string target) 
         {
             string targetLowercase = target.ToLower();
@@ -80,35 +89,38 @@ namespace SignalRChat.Hubs
 
         public void HandleAttacks() 
         {
-            foreach( KeyValuePair<string, Attack> atk in _attackQueue )
+            foreach( Attack atk in _attackQueue )
             {
-                if (enemyHandles.TryGetValue(atk.Value.target, out dynamic enemyObj)) {
-                    // Check if enemy is active / alive
-                    enemyObj.TakeDamage(atk.Value.attackPower);
+                if (enemyHandles.TryGetValue(atk.target, out dynamic enemyObj)) {
+
+                    enemyObj.TakeDamage(atk.attackPower);
+
                     if (enemyObj.health <= 0) {
-                        hubContext.Clients.Group(roomName).SendAsync("ReceiveMessage", $"{atk.Value.target} was killed by {atk.Key}!");
-                        _attackQueue.Remove(atk.Key);
+                        hubContext.Clients.Group(roomName).SendAsync("ReceiveMessage", $"{atk.target} was killed by {atk.attacker}!");
+                        _attackQueue.Remove(atk);
+                        // Deactivate enemyObj and remove it from enemyHandles until it respawns
                     }
                     else {
                         hubContext.Clients.Group(roomName).SendAsync(
                             "ReceiveMessage", 
-                            $"{atk.Key} attacked {atk.Value.target} and dealt {atk.Value.attackPower} damage! {enemyObj.health} HP remaining."
+                            $"{atk.attacker} attacked {atk.target} and dealt {atk.attackPower} damage! {enemyObj.health} HP remaining."
                         );
                     }
+
                 }
                 else {
-                    _attackQueue.Remove(atk.Key);
+                    _attackQueue.Remove(atk);
                 }
             }
         }
 
-        public string AttackRequest(string attacker, string target, int attackStat) 
+        public string AttackRequest(string attacker, string target, int attackPower) 
         {
             string targetLowercase = target.ToLower();
             
             if (enemyHandles.TryGetValue(targetLowercase, out dynamic enemyObj)) {
-                Attack atk = new Attack(attacker, target, attackStat);
-                _attackQueue.Add(attacker, atk);
+                Attack atk = new Attack(attacker, target, attackPower);
+                _attackQueue.Add(atk);
 
                 return "success";
             }
@@ -117,17 +129,11 @@ namespace SignalRChat.Hubs
             }
         }
 
-        public void StopAttack(string attacker) {
-            _attackQueue.Remove(attacker);
-        }
-
-        public string NavigationRequest(string direction) {
-            if (navigationDirections.TryGetValue(direction, out string nextRoom)) {
-                return nextRoom;
-            }
-            else {
-                return "invalid";
-            }
+        public void StopAttack(string attacker)
+        {
+            // Find the attack from the attackQueue that has the matching attacker name
+            Attack atk = _attackQueue.Find(x => x.attacker == attacker);
+            _attackQueue.Remove(atk);
         }
     }
 }
