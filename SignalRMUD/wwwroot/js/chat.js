@@ -14,19 +14,17 @@ function connect() {
     connection = new signalR.HubConnectionBuilder().withUrl("/mainHub").build();
     connection.start().then(function () {
 
-        let characterName = document.getElementById("nameInput").value;
-        let characterRace = document.getElementById("raceInput").value;
+        const characterName = document.getElementById("nameInput").value;
+        const characterRace = document.getElementById("raceInput").value;
 
         document.getElementById("connect-fields").classList.add("hidden");
         document.getElementById("message-fields").classList.remove("hidden");
         document.getElementById("sendButton").disabled = false;
     
-        connection.invoke("createCharacter", characterName, characterRace);
+        connection.invoke("CreateCharacter", characterName, characterRace);
 
         connection.on("ReceiveMessage", function (message) {
-            var li = document.createElement("li");
-            li.textContent = message;
-            document.getElementById("messagesList").appendChild(li);
+            printMessage(message);
         });
 
         connection.onclose(function () {
@@ -42,9 +40,16 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     const message = input.value;
     input.value = "";
 
+    printMessage(message);
+
     connection.invoke("SendMessage", message).catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
 });
 
+function printMessage(content) {
+    const li = document.createElement("li");
+    li.textContent = content;
+    document.getElementById("messagesList").appendChild(li);
+}
