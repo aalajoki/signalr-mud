@@ -18,6 +18,7 @@ namespace SignalRChat.Hubs
             await Clients.All.SendAsync("ReceiveMessage", message);
         }
 
+        // When a player sends a message, it is split into a command (first word) and the command's argument (rest of the message)
         public async Task SendMessage(string message)
         {
             string[] splitMessage = message.Split(' ');
@@ -30,55 +31,63 @@ namespace SignalRChat.Hubs
             await InterpretCommand(command, argument);
         }
 
+        // Command and its argument are recognized and processed to affect the game environment (if valid)
         public async Task InterpretCommand(string command, string argument) 
         {
             string currentRoomName = Context.Items["currentRoomName"].ToString();
             string characterName = Context.Items["characterName"].ToString();
 
-            if (command == "say") {
-                if (String.IsNullOrEmpty(argument)) {
-                    // Nothing to say
-                    await Clients.Caller.SendAsync("ReceiveMessage", "Cat got your tongue?");
-                }
-                else {
-                    // E.g. add "Bob: Hi" into chat
-                    await Clients.All.SendAsync("ReceiveMessage", $"{Context.Items["characterName"]}: {argument}");
-                }
-            }
-            else if (command == "go") {
-                string destination = _roomManager.RelayNavigationRequest(currentRoomName, argument);
+            switch (command)
+            {
+                case "say":
+                    if (String.IsNullOrEmpty(argument)) {
+                        await Clients.Caller.SendAsync("ReceiveMessage", "Cat got your tongue?");
+                    }
+                    else {
+                        // E.g. add "Bob: Hi" into chat
+                        await Clients.All.SendAsync("ReceiveMessage", $"{Context.Items["characterName"]}: {argument}");
+                    }
+                    break;
+                case "go":
+                    string destination = _roomManager.RelayNavigationRequest(currentRoomName, argument);
 
-                if (destination != "invalid") {
-                    await MoveToRoom(currentRoomName, destination);
-                }
-                else {
-                    await Clients.Caller.SendAsync("ReceiveMessage", "You can't go that way.");
-                }
-            }
-            else if (command == "greet" || command == "talk") {
-                // The relay the greet command to the correct room and NPC through RoomManager
-                string result = _roomManager.RelayGreetRequest(currentRoomName, argument);
-                
-                if (result == "notFound") {
-                    await Clients.Caller.SendAsync("ReceiveMessage", $"Couldn't find anyone named {argument}.");
-                }
-                else {
-                    //success
-                    await Clients.Caller.SendAsync("ReceiveMessage", result);
-                }
-            }
-            else if (command == "attack") {
-                // The relay the attack command to the correct room and NPC through RoomManager
-                string result = _roomManager.RelayAttackRequest(currentRoomName, characterName, argument, 1);
-                if (result == "notFound") {
-                    await Clients.Caller.SendAsync("ReceiveMessage", $"Couldn't find enemies named {argument}.");
-                }
-            }
-            else if (command == "stop") {
-                _roomManager.RelayStopAttack(currentRoomName, characterName);
-            }
-            else {
-                await Clients.Caller.SendAsync("ReceiveMessage", "Invalid command. Try again.");
+                    if (destination == "invalid") {
+                        await Clients.Caller.SendAsync("ReceiveMessage", "You can't go that way.");
+                    }
+                    else {
+                        // Create an illusion of movement by subscribing to another room's heartbeat events
+                        await MoveToRoom(currentRoomName, destination);
+                    }
+                    break;
+                case "greet":
+                case "talk":
+                    // Relay the greet command to the correct room and NPC through RoomManager
+                    string greetRequestResponse = _roomManager.RelayGreetRequest(currentRoomName, argument);
+                    
+                    if (greetRequestResponse == "notFound") {
+                        await Clients.Caller.SendAsync("ReceiveMessage", $"Couldn't find anyone named {argument}.");
+                    }
+                    else {
+                        // Send the NPC response to the player who sent the command
+                        await Clients.Caller.SendAsync("ReceiveMessage", greetRequestResponse);
+                    }
+                    break;
+                case "attack":
+                    // Relay the attack command to the correct room and NPC through RoomManager
+                    string attackRequestResponse = _roomManager.RelayAttackRequest(currentRoomName, characterName, argument, 1);
+
+                    if (attackRequestResponse == "notFound") {
+                        await Clients.Caller.SendAsync("ReceiveMessage", $"Couldn't find enemies named {argument}.");
+                    }
+                    // If successful, player's attack is added to the room-specific AttackQueue
+                    break;
+                case "stop":
+                    // Player's attack is removed from the AttackQueue
+                    _roomManager.RelayStopAttack(currentRoomName, characterName);
+                    break;
+                default:
+                    await Clients.Caller.SendAsync("ReceiveMessage", "Invalid command. Try again.");
+                    break;
             }
         }
 
@@ -93,7 +102,7 @@ namespace SignalRChat.Hubs
         public async Task MoveToRoom(string currentRoomName, string newRoomName)
         {
             string characterName = Context.Items["characterName"].ToString();
-
+            // Stop attacking
             _roomManager.RelayStopAttack(currentRoomName, characterName);
             // Remove player from the old room's group
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, currentRoomName);
@@ -102,7 +111,6 @@ namespace SignalRChat.Hubs
                 "ReceiveMessage", 
                 $"{Context.Items["characterName"]} left and entered {newRoomName}."
             );
-
             await EnterRoom(newRoomName);
         }
 
