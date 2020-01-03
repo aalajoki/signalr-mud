@@ -1,2 +1,2 @@
 # signalr-mud
-A MUD-style online multiplayer game base, built on top of SignalR Core.
+A MUD-like online multiplayer game basis, built on top of SignalR Core.
